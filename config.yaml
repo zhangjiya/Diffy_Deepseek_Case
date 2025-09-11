@@ -1,0 +1,77 @@
+deepseek:
+  api_key: sk-1e51f9796d634db691fafc3a53516f4e
+  base_url: https://api.deepseek.com/v1/chat/completions
+  max_tokens: 4000
+  model: deepseek-chat
+  temperature: 0.7
+
+default_ai_provider: doubao
+
+doubao:
+  default_key: key1
+  keys:
+    key1:
+      api_key: 2248f801-b122-48e8-aef4-3be4a85f3136
+#      faf6e5c7-90de-4efa-9613-4c163fe86ae6
+      base_url: https://ark.cn-beijing.volces.com/api/v3
+      max_tokens: 16384
+      model: doubao-1-5-thinking-pro-250415
+      name: 账号1（即将用完，建议账号2）
+      temperature: 0.3
+      top_p: 0.6
+    key2:
+      api_key: 2248f801-b122-48e8-aef4-3be4a85f3136
+#      62e7cc35-ce4c-47f7-97f8-cdd02b8c8e69
+      base_url: https://ark.cn-beijing.volces.com/api/v3
+      max_tokens: 16384
+      model: doubao-1-5-thinking-pro-250415
+      name: 账号2
+      temperature: 0.3
+      top_p: 0.6cççc
+
+feishu:
+  app_id: cli_a8e4a0b4b5dd9013
+  app_secret: sngfbhvjZad6tgL3dLJPZdH5nkCYIVaR
+  base_url: https://open.feishu.cn/open-apis
+  verification_token: SsNjSYae9sFri9iv9pQAgcKcKO5aEELc
+
+logging:
+  level: INFO
+  file: logs/app.log
+  max_size: 10MB
+  backup_count: 5
+
+output:
+  output_dir: ./output
+  formats:
+    - markdown
+    - excel
+    - xmind
+  generate_mindnote: true
+
+prompts:
+  default_template: mtp_optimized_prompt
+  available_templates:
+    - id: mtp_optimized_prompt
+      name: 标准测试用例生成
+      description: 基于需求文档生成标准测试用例
+      file: prompts/mtp_optimized_prompt.txt
+      supports_custom_requirements: true
+    - id: logic_check_prompt
+      name: 逻辑查缺补漏
+      description: 在标准测试用例基础上，添加需求逻辑查缺补漏功能
+      file: prompts/logic_check_prompt.txt
+      supports_custom_requirements: true
+    - id: custom_prompt
+      name: 自定义提示词
+      description: 用户自定义的提示词模板，预期结果作为用例步骤的子节点，支持图片理解
+      file: prompts/custom_prompt.txt
+      supports_custom_requirements: true
+    - id: test_hierarchical_template
+      name: 测试分层模板
+      description: 用于测试自动检测功能的模板
+      file: prompts/test_hierarchical_template.txt
+
+server:
+  host: 0.0.0.0
+  port: 5002
