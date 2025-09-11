@@ -1,0 +1,3150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试用例生成平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 2rem auto;
+            max-width: 1000px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* 顶部导航菜单样式 */
+        .top-nav-menu {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-item i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item span {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .nav-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 2px solid white;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-menu {
+                gap: 0.5rem;
+            }
+            
+            .nav-item {
+                min-width: 100px;
+                padding: 0.75rem 1rem;
+            }
+            
+            .nav-item i {
+                font-size: 1.25rem;
+            }
+            
+            .nav-item span {
+                font-size: 0.75rem;
+            }
+        }
+        
+        .content-section {
+            padding: 3rem 2rem;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            transform: none;
+        }
+
+        .btn-secondary {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-bg);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .info-card {
+            background: var(--light-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .prerequisite-card {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid #ffc107;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prerequisite-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="warning-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23ffc107" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23warning-pattern)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .prerequisite-card .card-title {
+            position: relative;
+            z-index: 1;
+            color: #856404;
+        }
+
+        .prerequisite-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .prerequisite-desc {
+            color: #856404;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .setup-steps {
+            margin: 1.5rem 0;
+        }
+
+        .setup-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .setup-step:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .step-desc {
+            color: #856404;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .step-image {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .step-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-image {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .step-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .clickable-image {
+            cursor: pointer;
+        }
+
+        .clickable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .step-image:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .image-overlay i {
+            font-size: 1.2rem;
+        }
+
+        .prerequisite-note {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid #28a745;
+            color: #155724;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* 图片模态弹窗样式 */
+        .modal-xl {
+            max-width: 90%;
+        }
+
+        #imageModal .modal-body {
+            padding: 0;
+            background: #000;
+        }
+
+        #imageModal .modal-content {
+            background: #000;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #imageModal .modal-header {
+            background: #000;
+            color: white;
+            border-bottom: 1px solid #333;
+        }
+
+        #imageModal .modal-footer {
+            background: #000;
+            border-top: 1px solid #333;
+        }
+
+        #imageModal .btn-close {
+            filter: invert(1);
+        }
+
+        #modalImage {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .tips-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .tips-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tips-list li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .tips-list li::before {
+            content: '✓';
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--primary-color);
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-section {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--success-color);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            background: var(--light-bg);
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .preview-content {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .preview-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .preview-content::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 4px;
+        }
+
+        .preview-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .preview-content::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-group .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-group .btn:hover {
+            background: var(--light-bg);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-group .btn:active {
+            transform: translateY(1px);
+        }
+
+        .copy-success {
+            background: var(--success-color) !important;
+            color: white !important;
+            border-color: var(--success-color) !important;
+        }
+
+        .copy-success:hover {
+            background: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .preview-content {
+            user-select: text;
+            cursor: text;
+        }
+
+        .history-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            flex: 1;
+        }
+
+        .history-date {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .history-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .file-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .file-badge:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .file-badge .file-type {
+            font-weight: 500;
+        }
+
+        .file-badge .file-size {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .file-badge:hover .file-size {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .file-badge-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .file-badge-container:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-badge-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .file-badge-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .file-badge-actions .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-history i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .history-stats {
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+            background: transparent;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .history-manager-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-manager-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 90%;
+            max-height: 90%;
+            width: 800px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .history-manager-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .history-manager-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .history-manager-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .history-manager-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .history-manager-body {
+            padding: 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                border-radius: 16px;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content-section {
+                padding: 2rem 1rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-card, .info-card, .prerequisite-card {
+                padding: 1.5rem;
+            }
+
+            .setup-step {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .step-number {
+                align-self: center;
+            }
+
+            .step-image {
+                margin-top: 0.5rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 快速开始步骤样式 */
+        .quick-start-steps {
+            margin-bottom: 1.5rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        /* 前置条件模态框样式 */
+        .prerequisites-content {
+            max-width: 100%;
+        }
+
+        .prerequisite-desc {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #92400e;
+        }
+
+        .setup-steps {
+            margin-bottom: 1.5rem;
+        }
+
+        .setup-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: var(--light-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .setup-step .step-number {
+            background: var(--warning-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .setup-step .step-content {
+            flex: 1;
+        }
+
+        .setup-step .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .setup-step .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .step-image {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-image img {
+            max-width: 300px;
+            height: auto;
+            display: block;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .step-image:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .image-overlay i {
+            color: white;
+            font-size: 2rem;
+        }
+
+        .prerequisite-note {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prerequisite-note i {
+            font-size: 1.25rem;
+        }
+
+        /* 模板帮助面板样式 */
+        .template-help-panel {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            height: 100%;
+        }
+
+        .template-help-panel h6 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .template-tips {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .template-tips li {
+            padding: 0.25rem 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .template-tips li:before {
+            content: "•";
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+        }
+
+        .template-example {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .template-example h6 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .example-content {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .example-content code {
+            background: none;
+            color: var(--text-primary);
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- 头部 -->
+            <div class="header">
+                <h1><i class="bi bi-cpu"></i> 测试用例生成平台</h1>
+                <p>基于AI的智能测试用例生成工具</p>
+                
+                <!-- 顶部导航菜单 -->
+                <div class="top-nav-menu">
+                    <div class="nav-item" onclick="openHistoryManager()">
+                        <i class="bi bi-clock-history"></i>
+                        <span>历史用例管理</span>
+                        <small class="nav-count" id="historyCount">-</small>
+                    </div>
+                    <div class="nav-item" onclick="openPromptManager()">
+                        <i class="bi bi-chat-quote"></i>
+                        <span>提示词管理</span>
+                        <small class="nav-count" id="promptCount">-</small>
+                    </div>
+                    <div class="nav-item" onclick="showPrerequisites()">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span>使用说明</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 主要内容 -->
+            <div class="content-section">
+                <div class="row">
+                    <!-- 左侧：配置表单和结果展示 -->
+                    <div class="col-lg-8">
+                        <div class="form-card fade-in">
+                            <div class="card-title">
+                                <i class="bi bi-gear"></i>
+                                配置选项
+                            </div>
+                            
+                            <!-- AI提供商选择 -->
+                            <div class="mb-4">
+                                <label for="aiProvider" class="form-label">
+                                    <i class="bi bi-robot"></i>
+                                    AI提供商
+                                </label>
+                                <select class="form-select" id="aiProvider" onchange="onAIProviderChange()">
+                                    <option value="doubao">豆包 (Doubao) - 推荐用于测试用例生成</option>
+                                    <option value="deepseek">DeepSeek - 通用AI模型</option>
+                                </select>
+                            </div>
+
+                            <!-- 豆包密钥选择 -->
+                            <div class="mb-4" id="doubaoKeySection">
+                                <label for="doubaoKey" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    豆包账号选择
+                                </label>
+                                <select class="form-select" id="doubaoKey">
+                                    <option value="">加载中...</option>
+                                </select>
+                                <small class="form-text text-muted">选择要使用的豆包账号</small>
+                            </div>
+
+                            <!-- 提示词模板选择 -->
+                            <div class="mb-4">
+                                <label for="promptTemplate" class="form-label">
+                                    <i class="bi bi-file-text"></i>
+                                    提示词模板
+                                </label>
+                                <div class="d-flex gap-2 mb-2">
+                                    <select class="form-select" id="promptTemplate" onchange="onPromptTemplateChange()">
+                                        <option value="">加载中...</option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-info" onclick="previewPromptTemplate()" title="预览模板内容">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="showCreateTemplateModal()">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">选择要使用的提示词模板，点击👁️预览内容，或点击+号创建自定义模板</small>
+                                
+                                <!-- 自定义要求区域 -->
+                                <div id="customRequirementsSection" class="mt-3" style="display: none;">
+                                    <label for="userRequirements" class="form-label">
+                                        <i class="bi bi-pencil"></i>
+                                        自定义要求 <span class="text-muted">(可选)</span>
+                                    </label>
+                                    <textarea class="form-control" id="userRequirements" rows="3" 
+                                              placeholder="请输入您的自定义要求，例如：重点关注边界条件测试、异常流程测试等"></textarea>
+                                    <small class="form-text text-muted">为选中的提示词模板添加特定要求，这些要求会与模板内容结合，生成更符合您需求的测试用例</small>
+                                </div>
+                            </div>
+
+                            <!-- 模型选择 -->
+                            <div class="mb-4" id="modelSection" style="display: none;">
+                                <label for="aiModel" class="form-label">
+                                    <i class="bi bi-cpu"></i>
+                                    模型选择
+                                </label>
+                                <select class="form-select" id="aiModel">
+                                    <!-- 动态加载模型选项 -->
+                                </select>
+                            </div>
+
+                            <!-- 模型参数配置 -->
+                            <div class="mb-4" id="modelParamsSection" style="display: none;">
+                                <label class="form-label">
+                                    <i class="bi bi-sliders"></i>
+                                    模型参数
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="temperature" class="form-label">Temperature (温度)</label>
+                                        <input type="range" class="form-range" id="temperature" min="0" max="2" step="0.1" value="0.3">
+                                        <div class="d-flex justify-content-between">
+                                            <small>0.0 (确定性)</small>
+                                            <small id="temperatureValue">0.3</small>
+                                            <small>2.0 (创造性)</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="topP" class="form-label">Top-p (核采样)</label>
+                                        <input type="range" class="form-range" id="topP" min="0" max="1" step="0.1" value="0.6">
+                                        <div class="d-flex justify-content-between">
+                                            <small>0.0</small>
+                                            <small id="topPValue">0.6</small>
+                                            <small>1.0</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 输入方式选择 -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-input-cursor"></i>
+                                    输入方式
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="inputType" id="urlInput" value="url" checked>
+                                            <label class="form-check-label" for="urlInput">
+                                                飞书文档URL
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="inputType" id="contentInput" value="content">
+                                            <label class="form-check-label" for="contentInput">
+                                                直接输入内容
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- URL输入 -->
+                            <div id="urlSection" class="mb-4">
+                                <label for="documentUrl" class="form-label">
+                                    <i class="bi bi-link-45deg"></i>
+                                    飞书文档URL
+                                </label>
+                                <input type="url" class="form-control" id="documentUrl" 
+                                       placeholder="请输入飞书文档链接，例如：https://xxx.feishu.cn/docx/xxx 或 https://xxx.feishu.cn/wiki/xxx">
+                            </div>
+                            
+                            <!-- 内容输入 -->
+                            <div id="contentSection" class="mb-4" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="documentTitle" class="form-label">
+                                            <i class="bi bi-type"></i>
+                                            文档标题
+                                        </label>
+                                        <input type="text" class="form-control" id="documentTitle" 
+                                               placeholder="请输入文档标题" value="测试用例">
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <label for="documentContent" class="form-label">
+                                        <i class="bi bi-file-text"></i>
+                                        文档内容
+                                    </label>
+                                    <textarea class="form-control" id="documentContent" rows="6" 
+                                              placeholder="请输入文档内容..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- 生成按钮 -->
+                            <button type="button" class="btn btn-primary" id="generateBtn" onclick="generateTestCases()">
+                                <i class="bi bi-play-circle"></i>
+                                生成测试用例
+                            </button>
+                        </div>
+                        
+                        <!-- 加载状态 -->
+                        <div class="loading" id="loadingSection" style="display: none;">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">生成中...</span>
+                            </div>
+                            <p class="mt-3">正在生成测试用例，请稍候...</p>
+                        </div>
+                        
+                        <!-- 结果展示 -->
+                        <div class="result-section" id="resultSection" style="display: none;">
+                            <div class="result-header">
+                                <i class="bi bi-check-circle"></i>
+                                生成完成！
+                            </div>
+                            
+                            <!-- 结果标签页 -->
+                            <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="mindnote-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#mindnote" type="button" role="tab">
+                                        <i class="bi bi-list-check"></i>
+                                        思维笔记格式
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="raw-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#raw" type="button" role="tab">
+                                        <i class="bi bi-file-text"></i>
+                                        原始格式
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content" id="resultTabContent">
+                                <div class="tab-pane fade show active" id="mindnote" role="tabpanel">
+                                    <div class="preview-header">
+                                        <h6 class="preview-title">优化后的思维笔记格式（推荐）</h6>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-secondary" onclick="copyToClipboard('mindnote', this)" title="复制到剪贴板">
+                                                <i class="bi bi-clipboard"></i>
+                                                复制
+                                            </button>
+                                            <button class="btn btn-secondary" onclick="downloadFile('mindnote')" title="下载文件">
+                                                <i class="bi bi-download"></i>
+                                                下载
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="preview-content" id="mindnoteContent"></div>
+                                </div>
+                                
+                                <div class="tab-pane fade" id="raw" role="tabpanel">
+                                    <div class="preview-header">
+                                        <h6 class="preview-title">原始AI生成内容</h6>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-secondary" onclick="copyToClipboard('raw', this)" title="复制到剪贴板">
+                                                <i class="bi bi-clipboard"></i>
+                                                复制
+                                            </button>
+                                            <button class="btn btn-secondary" onclick="downloadFile('raw')" title="下载文件">
+                                                <i class="bi bi-download"></i>
+                                                下载
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="preview-content" id="rawContent"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧：使用说明 -->
+                    <div class="col-lg-4">
+                        <!-- 使用说明 -->
+                        <div class="info-card fade-in">
+                            <div class="card-title">
+                                <i class="bi bi-info-circle"></i>
+                                快速开始
+                            </div>
+                            
+                            <div class="quick-start-steps">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <div class="step-title">选择AI提供商</div>
+                                        <div class="step-desc">推荐使用豆包AI，支持多模态输入</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <div class="step-title">输入文档内容</div>
+                                        <div class="step-desc">提供飞书文档URL或直接输入内容</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <div class="step-title">生成测试用例</div>
+                                        <div class="step-desc">点击生成按钮，获取AI生成的测试用例</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tips-section">
+                                <div class="tips-title">
+                                    <i class="bi bi-lightbulb"></i>
+                                    使用提示
+                                </div>
+                                <ul class="tips-list">
+                                    <li>支持飞书文档和Wiki链接直接解析</li>
+                                    <li>自动生成思维笔记格式文件</li>
+                                    <li>可下载原始和优化后的测试用例</li>
+                                    <li>支持一键复制，格式与下载文件完全一致</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史管理模态框 -->
+    <div class="history-manager-modal" id="historyManagerModal">
+        <div class="history-manager-content">
+            <div class="history-manager-header">
+                <h5 class="history-manager-title">
+                    <i class="bi bi-clock-history"></i>
+                    历史用例管理
+                </h5>
+                <button class="history-manager-close" onclick="closeHistoryManager()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="history-manager-body">
+                <div id="historyManagerContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载历史记录...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示词管理模态框 -->
+    <div class="history-manager-modal" id="promptManagerModal">
+        <div class="history-manager-content">
+            <div class="history-manager-header">
+                <h5 class="history-manager-title">
+                    <i class="bi bi-chat-quote"></i>
+                    提示词管理
+                </h5>
+                <button class="history-manager-close" onclick="closePromptManager()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="history-manager-body">
+                <div id="promptManagerContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载提示词...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 前置条件模态框 -->
+    <div class="history-manager-modal" id="prerequisitesModal">
+        <div class="history-manager-content">
+            <div class="history-manager-header">
+                <h5 class="history-manager-title">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    前置条件设置
+                </h5>
+                <button class="history-manager-close" onclick="closePrerequisites()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="history-manager-body">
+                <div class="prerequisites-content">
+                    <div class="prerequisite-desc mb-4">
+                        <strong>重要提醒：</strong>使用平台前，请先在飞书云文档中完成以下设置：
+                    </div>
+                    
+                    <div class="setup-steps">
+                        <div class="setup-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">打开飞书云文档</div>
+                                <div class="step-desc">在飞书云文档中打开要分析的文档</div>
+                                <div class="step-image">
+                                    <img src="/static/images/feishu_setup_step1.jpeg" alt="飞书云文档界面" class="img-fluid rounded clickable-image" 
+                                         onclick="openImageModal('/static/images/feishu_setup_step1.jpeg', '飞书云文档界面')" 
+                                         title="点击查看大图">
+                                    <div class="image-overlay">
+                                        <i class="bi bi-zoom-in"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setup-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">添加文档应用</div>
+                                <div class="step-desc">点击右上角"..." → "添加文档应用" → 选择"文档读取器"</div>
+                                <div class="step-image">
+                                    <img src="/static/images/feishu_setup_step2.jpeg" alt="添加文档应用" class="img-fluid rounded clickable-image" 
+                                         onclick="openImageModal('/static/images/feishu_setup_step2.jpeg', '添加文档应用')" 
+                                         title="点击查看大图">
+                                    <div class="image-overlay">
+                                        <i class="bi bi-zoom-in"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setup-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">获取文档链接</div>
+                                <div class="step-desc">点击"分享" → "复制链接"，将链接粘贴到平台中</div>
+                                <div class="step-image">
+                                    <img src="/static/images/feishu_setup_step3.jpeg" alt="获取文档链接" class="img-fluid rounded clickable-image" 
+                                         onclick="openImageModal('/static/images/feishu_setup_step3.jpeg', '获取文档链接')" 
+                                         title="点击查看大图">
+                                    <div class="image-overlay">
+                                        <i class="bi bi-zoom-in"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="prerequisite-note mt-4">
+                        <i class="bi bi-lightbulb"></i>
+                        完成以上设置后，即可使用平台生成测试用例
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 全局变量存储生成的文件信息
+        let generatedFiles = {};
+        let aiProviders = [];
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('页面开始初始化...');
+            
+            // 强制刷新所有数据，防止缓存问题
+            await Promise.all([
+                loadAIProviders(),
+                loadDoubaoKeys(),
+                loadPromptTemplates()
+            ]);
+            
+            // 初始化AI提供商选择
+            onAIProviderChange();
+            
+            // 输入方式切换
+            document.querySelectorAll('input[name="inputType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'url') {
+                        document.getElementById('urlSection').style.display = 'block';
+                        document.getElementById('contentSection').style.display = 'none';
+                    } else {
+                        document.getElementById('urlSection').style.display = 'none';
+                        document.getElementById('contentSection').style.display = 'block';
+                    }
+                });
+            });
+
+            // 参数滑块事件监听
+            document.getElementById('temperature').addEventListener('input', function() {
+                document.getElementById('temperatureValue').textContent = this.value;
+            });
+
+            document.getElementById('topP').addEventListener('input', function() {
+                document.getElementById('topPValue').textContent = this.value;
+            });
+            
+            console.log('页面初始化完成');
+        });
+        
+        // 加载AI提供商信息
+        async function loadAIProviders() {
+            try {
+                // 添加时间戳防止缓存
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/ai-providers?t=${timestamp}`, {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                aiProviders = await response.json();
+                console.log('AI提供商信息加载完成:', aiProviders);
+            } catch (error) {
+                console.error('加载AI提供商失败:', error);
+                // 设置默认值以防加载失败
+                aiProviders = [
+                    {
+                        'id': 'doubao',
+                        'name': '豆包 (Doubao)',
+                        'description': '推荐用于测试用例生成',
+                        'models': [
+                            {
+                                'id': 'doubao-1-5-thinking-vision-pro-250428',
+                                'name': 'Doubao 1.5 Thinking Vision Pro',
+                                'description': '多模态思维模型，支持图像和文本理解',
+                                'default_temperature': 0.3,
+                                'default_top_p': 0.6
+                            },
+                            {
+                                'id': 'doubao-1-5-thinking-pro-250415',
+                                'name': 'Doubao 1.5 Thinking Pro',
+                                'description': '思维链推理模型，适合复杂逻辑分析',
+                                'default_temperature': 0.3,
+                                'default_top_p': 0.6
+                            },
+                            {
+                                'id': 'doubao-seed-1-6-thinking-250715',
+                                'name': 'Doubao Seed 1.6 Thinking',
+                                'description': '种子模型，强大的推理和思考能力',
+                                'default_temperature': 0.3,
+                                'default_top_p': 0.6
+                            }
+                        ]
+                    },
+                    {
+                        'id': 'deepseek',
+                        'name': 'DeepSeek',
+                        'description': '通用AI模型',
+                        'models': []
+                    }
+                ];
+            }
+        }
+
+        // 加载豆包密钥列表
+        async function loadDoubaoKeys() {
+            try {
+                // 添加时间戳防止缓存
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/doubao-keys?t=${timestamp}`, {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const keySelect = document.getElementById('doubaoKey');
+                    keySelect.innerHTML = '';
+                    
+                    console.log('收到的豆包密钥数据:', result.keys);
+                    
+                    result.keys.forEach(key => {
+                        const option = document.createElement('option');
+                        option.value = key.id;
+                        option.textContent = key.name;  // 只显示姓名，不显示模型
+                        keySelect.appendChild(option);
+                        console.log(`添加密钥选项: ${key.id} = ${key.name}`);
+                    });
+                    
+                    // 设置默认选择
+                    if (result.keys.length > 0) {
+                        keySelect.value = result.keys[0].id;
+                        console.log(`设置默认密钥: ${result.keys[0].id}`);
+                    }
+                    
+                    console.log('豆包密钥列表加载完成:', result.keys);
+                } else {
+                    console.error('加载豆包密钥失败:', result.error);
+                }
+            } catch (error) {
+                console.error('加载豆包密钥失败:', error);
+            }
+        }
+        
+        // 加载提示词模板列表
+        async function loadPromptTemplates() {
+            try {
+                // 添加时间戳防止缓存
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/prompt-templates?t=${timestamp}`, {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const templateSelect = document.getElementById('promptTemplate');
+                    const currentValue = templateSelect.value;
+                    templateSelect.innerHTML = '';
+                    
+                    // 添加默认选项
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = '请选择提示词模板';
+                    templateSelect.appendChild(defaultOption);
+                    
+                    // 添加新增模板选项
+                    const newTemplateOption = document.createElement('option');
+                    newTemplateOption.value = 'new_template';
+                    newTemplateOption.textContent = '➕ 新增自定义模板';
+                    templateSelect.appendChild(newTemplateOption);
+                    
+                    console.log('收到的提示词模板数据:', result.templates);
+                    
+                    // 检查当前选择的模板是否仍然存在
+                    let currentTemplateExists = false;
+                    
+                    result.templates.forEach(template => {
+                        const option = document.createElement('option');
+                        option.value = template.id;
+                        option.textContent = template.name;
+                        option.setAttribute('data-description', template.description);
+                        option.setAttribute('data-supports-custom', template.supports_custom_requirements);
+                        templateSelect.appendChild(option);
+                        
+                        // 检查当前选择的模板是否仍然存在
+                        if (template.id === currentValue) {
+                            currentTemplateExists = true;
+                        }
+                        
+                        console.log(`添加模板选项: ${template.id} = ${template.name}`);
+                    });
+                    
+                    // 如果当前选择的模板不存在，清除选择
+                    if (currentValue && !currentTemplateExists) {
+                        console.log(`当前选择的模板 ${currentValue} 已不存在，清除选择`);
+                        templateSelect.value = '';
+                        // 隐藏自定义要求区域
+                        document.getElementById('customRequirementsSection').style.display = 'none';
+                    }
+                    
+                    console.log('提示词模板列表加载完成:', result.templates);
+                } else {
+                    console.error('加载提示词模板失败:', result.error);
+                    // 加载失败时清除选择
+                    const templateSelect = document.getElementById('promptTemplate');
+                    templateSelect.innerHTML = '';
+                    templateSelect.value = '';
+                    document.getElementById('customRequirementsSection').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('加载提示词模板失败:', error);
+                // 加载失败时清除选择
+                const templateSelect = document.getElementById('promptTemplate');
+                templateSelect.innerHTML = '';
+                templateSelect.value = '';
+                document.getElementById('customRequirementsSection').style.display = 'none';
+            }
+        }
+
+        // AI提供商切换处理
+        function onAIProviderChange() {
+            const aiProvider = document.getElementById('aiProvider').value;
+            const provider = aiProviders.find(p => p.id === aiProvider);
+            
+            // 显示/隐藏豆包密钥选择
+            if (aiProvider === 'doubao') {
+                document.getElementById('doubaoKeySection').style.display = 'block';
+            } else {
+                document.getElementById('doubaoKeySection').style.display = 'none';
+            }
+            
+            if (provider && provider.models && provider.models.length > 0) {
+                // 显示模型选择
+                document.getElementById('modelSection').style.display = 'block';
+                document.getElementById('modelParamsSection').style.display = 'block';
+                
+                // 加载模型选项
+                const modelSelect = document.getElementById('aiModel');
+                modelSelect.innerHTML = '';
+                provider.models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = `${model.name} - ${model.description}`;
+                    modelSelect.appendChild(option);
+                });
+                
+                // 设置默认参数
+                if (provider.models.length > 0) {
+                    const defaultModel = provider.models[0];
+                    document.getElementById('temperature').value = defaultModel.default_temperature || 0.3;
+                    document.getElementById('topP').value = defaultModel.default_top_p || 0.6;
+                    document.getElementById('temperatureValue').textContent = defaultModel.default_temperature || 0.3;
+                    document.getElementById('topPValue').textContent = defaultModel.default_top_p || 0.6;
+                }
+            } else {
+                // 隐藏模型选择
+                document.getElementById('modelSection').style.display = 'none';
+                document.getElementById('modelParamsSection').style.display = 'none';
+            }
+        }
+
+        // 生成测试用例
+        async function generateTestCases() {
+            const aiProvider = document.getElementById('aiProvider').value;
+            const doubaoKey = document.getElementById('doubaoKey').value;
+            const promptTemplate = document.getElementById('promptTemplate').value;
+            const userRequirements = document.getElementById('userRequirements').value.trim();
+            
+            if (!aiProvider) {
+                alert('请选择AI提供商');
+                return;
+            }
+            
+            if (aiProvider === 'doubao' && !doubaoKey) {
+                alert('请选择豆包账号');
+                return;
+            }
+            
+            if (!promptTemplate) {
+                alert('请选择提示词模板');
+                return;
+            }
+            
+            // 检查是否为新增模板
+            if (promptTemplate === 'new_template') {
+                alert('请先创建自定义模板');
+                return;
+            }
+            
+            const inputType = document.querySelector('input[name="inputType"]:checked').value;
+            let documentUrl = '';
+            let documentTitle = '';
+            let documentContent = '';
+            
+            if (inputType === 'url') {
+                documentUrl = document.getElementById('documentUrl').value.trim();
+                if (!documentUrl) {
+                    alert('请输入飞书文档URL');
+                    return;
+                }
+            } else {
+                documentTitle = document.getElementById('documentTitle').value.trim();
+                documentContent = document.getElementById('documentContent').value.trim();
+                if (!documentTitle || !documentContent) {
+                    alert('请输入文档标题和内容');
+                    return;
+                }
+            }
+            
+            // 获取模型参数
+            const aiModel = document.getElementById('aiModel').value;
+            const temperature = document.getElementById('temperature').value;
+            const topP = document.getElementById('topP').value;
+            
+            // 显示加载状态
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            
+            try {
+                const requestData = {
+                    ai_provider: aiProvider,
+                    doubao_key: doubaoKey,
+                    prompt_template_id: promptTemplate, // 修复字段名
+                    user_requirements: userRequirements, // 传递自定义要求
+                    input_type: inputType,
+                    document_url: documentUrl,
+                    document_title: documentTitle,
+                    document_content: documentContent,
+                    model: aiModel,
+                    temperature: parseFloat(temperature),
+                    top_p: parseFloat(topP)
+                };
+                
+                console.log('发送请求数据:', requestData);
+                
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 隐藏加载状态
+                    document.getElementById('loadingSection').style.display = 'none';
+                    
+                    // 显示结果
+                    document.getElementById('resultSection').style.display = 'block';
+                    
+                    // 填充内容
+                    if (result.mindnote_content) {
+                        document.getElementById('mindnoteContent').textContent = result.mindnote_content;
+                    }
+                    if (result.raw_content) {
+                        document.getElementById('rawContent').textContent = result.raw_content;
+                    }
+                    
+                    // 存储生成的文件信息，用于复制和下载功能
+                    generatedFiles = {
+                        'raw': result.raw_file || '',
+                        'mindnote': result.mindnote_file || result.raw_file || ''
+                    };
+                    
+                    console.log('生成的文件信息:', generatedFiles);
+                    
+                    // 滚动到结果区域
+                    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+                    
+                    console.log('测试用例生成成功:', result);
+                } else {
+                    throw new Error(result.error || '生成失败');
+                }
+            } catch (error) {
+                console.error('生成测试用例失败:', error);
+                alert('生成失败：' + error.message);
+                
+                // 隐藏加载状态
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        }
+        
+        // 下载文件
+        function downloadFile(fileType) {
+            if (!generatedFiles[fileType]) {
+                showAlert('文件信息不存在', 'warning');
+                return;
+            }
+            
+            const filename = generatedFiles[fileType].split('/').pop();
+            const url = `/api/download/${fileType}/${filename}`;
+            
+            // 创建临时链接下载
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 复制内容到剪贴板
+        async function copyToClipboard(fileType, buttonElement) {
+            if (!generatedFiles[fileType]) {
+                showAlert('文件内容不存在', 'warning');
+                return;
+            }
+
+            const button = buttonElement || event?.target?.closest('button');
+            if (!button) {
+                showAlert('无法获取按钮元素', 'error');
+                return;
+            }
+            const originalText = button.innerHTML;
+            const originalClass = button.className;
+
+            try {
+                // 显示加载状态
+                button.innerHTML = '<i class="bi bi-hourglass-split"></i> 复制中...';
+                button.disabled = true;
+
+                // 从服务器获取准确的文件内容
+                const filename = generatedFiles[fileType].split('/').pop();
+                const response = await fetch(`/api/content/${fileType}/${filename}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '获取内容失败');
+                }
+
+                const content = result.content;
+                
+                // 使用现代Clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(content);
+                } else {
+                    // 降级方案：使用传统方法
+                    const textArea = document.createElement('textarea');
+                    textArea.value = content;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                }
+                
+                // 显示成功反馈
+                showCopyFeedback('✅ 内容已复制到剪贴板！可直接粘贴到思维笔记');
+                
+                // 按钮状态反馈
+                button.innerHTML = '<i class="bi bi-check"></i> 已复制';
+                button.className = originalClass + ' copy-success';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.className = originalClass;
+                    button.disabled = false;
+                }, 2000);
+                
+            } catch (err) {
+                console.error('复制失败:', err);
+                
+                // 恢复按钮状态
+                button.innerHTML = originalText;
+                button.className = originalClass;
+                button.disabled = false;
+                
+                // 降级到手动复制
+                showAlert('自动复制失败，已选中内容供手动复制', 'warning');
+                
+                // 选中内容供用户手动复制
+                const contentElement = document.getElementById(`${fileType}Content`);
+                const range = document.createRange();
+                range.selectNodeContents(contentElement);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                showAlert('内容已选中，请按 Ctrl+C 手动复制', 'info');
+            }
+        }
+
+        // 显示复制成功反馈
+        function showCopyFeedback(message) {
+            // 移除现有反馈
+            const existingFeedback = document.querySelector('.copy-feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+            
+            // 创建新反馈
+            const feedback = document.createElement('div');
+            feedback.className = 'copy-feedback';
+            feedback.innerHTML = `
+                <i class="bi bi-check-circle"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(feedback);
+            
+            // 自动移除
+            setTimeout(() => {
+                if (feedback.parentNode) {
+                    feedback.remove();
+                }
+            }, 3000);
+        }
+        
+        // 显示/隐藏加载状态
+        function showLoading(show) {
+            const loadingSection = document.getElementById('loadingSection');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            if (show) {
+                loadingSection.style.display = 'block';
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> 生成中...';
+            } else {
+                loadingSection.style.display = 'none';
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="bi bi-play-circle"></i> 生成测试用例';
+            }
+        }
+        
+        // 显示/隐藏结果
+        function showResult() {
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function hideResult() {
+            document.getElementById('resultSection').style.display = 'none';
+        }
+        
+        // 显示提示信息
+        function showAlert(message, type) {
+            // 移除现有提示
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // 创建新提示
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // 插入到表单部分前面
+            const formCard = document.querySelector('.form-card');
+            formCard.parentNode.insertBefore(alertDiv, formCard);
+            
+            // 自动隐藏
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加一些交互效果
+            const cards = document.querySelectorAll('.form-card, .info-card, .prerequisite-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        // 加载历史记录
+        async function loadHistory() {
+            const historyContent = document.getElementById('historyContent');
+            
+            try {
+                // 显示加载状态
+                historyContent.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载历史记录...</p>
+                    </div>
+                `;
+
+                const response = await fetch('/api/history');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '加载失败');
+                }
+
+                if (result.history.length === 0) {
+                    historyContent.innerHTML = `
+                        <div class="empty-history">
+                            <i class="bi bi-clock-history"></i>
+                            <h5>暂无历史记录</h5>
+                            <p>生成测试用例后，历史记录将显示在这里</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 渲染历史记录
+                const historyHTML = result.history.map(item => {
+                    const filesHTML = item.files.map(file => {
+                        const fileTypeText = {
+                            'raw': '原始格式',
+                            'mindnote': '思维笔记',
+                            'final': '最终格式'
+                        }[file.file_type] || '未知格式';
+                        
+                        const fileSize = formatFileSize(file.size);
+                        
+                        return `
+                            <a href="#" class="file-badge" onclick="viewHistoryFile('${file.filename}', '${file.file_type}')">
+                                <i class="bi bi-file-text"></i>
+                                <span class="file-type">${fileTypeText}</span>
+                                <span class="file-size">${fileSize}</span>
+                            </a>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div>
+                                    <h6 class="history-title">${item.title}</h6>
+                                    <div class="history-date">${item.created_date}</div>
+                                </div>
+                            </div>
+                            <div class="history-files">
+                                ${filesHTML}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                historyContent.innerHTML = historyHTML;
+
+            } catch (error) {
+                console.error('加载历史记录失败:', error);
+                historyContent.innerHTML = `
+                    <div class="empty-history">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <h5>加载失败</h5>
+                        <p>${error.message}</p>
+                        <button class="btn btn-secondary mt-3" onclick="loadHistory()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            重试
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 查看历史文件
+        async function viewHistoryFile(filename, fileType) {
+            try {
+                const response = await fetch(`/api/history/${filename}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '获取文件失败');
+                }
+
+                // 显示文件内容
+                const content = result.content;
+                
+                // 根据文件类型切换到对应标签页
+                if (fileType === 'mindnote') {
+                    document.getElementById('mindnote-tab').click();
+                    document.getElementById('mindnoteContent').textContent = content;
+                } else {
+                    document.getElementById('raw-tab').click();
+                    document.getElementById('rawContent').textContent = content;
+                }
+
+                // 显示成功提示
+                showAlert(`已加载历史文件: ${filename}`, 'success');
+
+            } catch (error) {
+                console.error('查看历史文件失败:', error);
+                showAlert(`查看文件失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // 打开历史管理模态框
+        function openHistoryManager() {
+            const modal = document.getElementById('historyManagerModal');
+            modal.style.display = 'flex';
+            loadHistoryForManager();
+        }
+
+        // 关闭历史管理模态框
+        function closeHistoryManager() {
+            const modal = document.getElementById('historyManagerModal');
+            modal.style.display = 'none';
+        }
+
+        // 为历史管理器加载数据
+        async function loadHistoryForManager() {
+            const historyContent = document.getElementById('historyManagerContent');
+            
+            try {
+                // 显示加载状态
+                historyContent.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载历史记录...</p>
+                    </div>
+                `;
+
+                const response = await fetch('/api/history');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '加载失败');
+                }
+
+                // 更新主页面的历史统计
+                updateHistoryStats(result.history);
+
+                if (result.history.length === 0) {
+                    historyContent.innerHTML = `
+                        <div class="empty-history">
+                            <i class="bi bi-clock-history"></i>
+                            <h5>暂无历史记录</h5>
+                            <p>生成测试用例后，历史记录将显示在这里</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 渲染历史记录（增强版）
+                const historyHTML = result.history.map(item => {
+                    const filesHTML = item.files.map(file => {
+                        const fileTypeText = {
+                            'raw': '原始格式',
+                            'mindnote': '思维笔记',
+                            'final': '最终格式'
+                        }[file.file_type] || '未知格式';
+                        
+                        const fileSize = formatFileSize(file.size);
+                        
+                        return `
+                            <div class="file-badge-container">
+                                <div class="file-badge-info">
+                                    <i class="bi bi-file-text"></i>
+                                    <span class="file-type">${fileTypeText}</span>
+                                    <span class="file-size">${fileSize}</span>
+                                </div>
+                                <div class="file-badge-actions">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewHistoryFileInManager('${file.filename}', '${file.file_type}')" title="查看">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="copyHistoryFile('${file.filename}', '${file.file_type}')" title="复制">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="downloadHistoryFile('${file.filename}')" title="下载">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div>
+                                    <h6 class="history-title">${item.title}</h6>
+                                    <div class="history-date">${item.created_date}</div>
+                                </div>
+                            </div>
+                            <div class="history-files">
+                                ${filesHTML}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                historyContent.innerHTML = historyHTML;
+
+            } catch (error) {
+                console.error('加载历史记录失败:', error);
+                historyContent.innerHTML = `
+                    <div class="empty-history">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <h5>加载失败</h5>
+                        <p>${error.message}</p>
+                        <button class="btn btn-secondary mt-3" onclick="loadHistoryForManager()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            重试
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 更新历史统计
+        function updateHistoryStats(history) {
+            const historyCount = document.getElementById('historyCount');
+            historyCount.textContent = history.length;
+        }
+
+        // 在历史管理器中查看文件
+        async function viewHistoryFileInManager(filename, fileType) {
+            try {
+                const response = await fetch(`/api/history/${filename}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '获取文件失败');
+                }
+
+                // 显示文件内容预览
+                showFilePreview(result.content, filename, fileType);
+
+            } catch (error) {
+                console.error('查看历史文件失败:', error);
+                showAlert(`查看文件失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 复制历史文件
+        async function copyHistoryFile(filename, fileType) {
+            try {
+                const response = await fetch(`/api/history/${filename}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '获取文件失败');
+                }
+
+                const content = result.content;
+                
+                // 使用现代Clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(content);
+                } else {
+                    // 降级方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = content;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                }
+                
+                showCopyFeedback('✅ 历史文件已复制到剪贴板！');
+
+            } catch (error) {
+                console.error('复制历史文件失败:', error);
+                showAlert(`复制失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 下载历史文件
+        function downloadHistoryFile(filename) {
+            const url = `/api/download/raw/${filename}`;
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 显示文件预览
+        function showFilePreview(content, filename, fileType) {
+            const fileTypeText = {
+                'raw': '原始格式',
+                'mindnote': '思维笔记格式',
+                'final': '最终格式'
+            }[fileType] || '未知格式';
+
+            // 创建预览模态框
+            const previewHTML = `
+                <div class="history-manager-modal" id="filePreviewModal">
+                    <div class="history-manager-content" style="width: 90%; max-width: 1000px;">
+                        <div class="history-manager-header">
+                            <h5 class="history-manager-title">
+                                <i class="bi bi-file-text"></i>
+                                ${filename} (${fileTypeText})
+                            </h5>
+                            <button class="history-manager-close" onclick="closeFilePreview()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                        <div class="history-manager-body">
+                            <div class="preview-content" style="max-height: 50vh; overflow-y: auto;">
+                                ${content.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 移除现有预览
+            const existingPreview = document.getElementById('filePreviewModal');
+            if (existingPreview) {
+                existingPreview.remove();
+            }
+
+            // 添加新预览
+            document.body.insertAdjacentHTML('beforeend', previewHTML);
+            document.getElementById('filePreviewModal').style.display = 'flex';
+        }
+
+        // 关闭文件预览
+        function closeFilePreview() {
+            const modal = document.getElementById('filePreviewModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 点击模态框外部关闭
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('historyManagerModal');
+            if (event.target === modal) {
+                closeHistoryManager();
+            }
+            
+            const promptModal = document.getElementById('promptManagerModal');
+            if (event.target === promptModal) {
+                closePromptManager();
+            }
+            
+            const previewModal = document.getElementById('filePreviewModal');
+            if (event.target === previewModal) {
+                closeFilePreview();
+            }
+            
+            const promptPreviewModal = document.getElementById('promptPreviewModal');
+            if (event.target === promptPreviewModal) {
+                closePromptPreview();
+            }
+        });
+
+        // ==================== 提示词管理功能 ====================
+
+        // 打开提示词管理模态框
+        function openPromptManager() {
+            const modal = document.getElementById('promptManagerModal');
+            modal.style.display = 'flex';
+            loadPromptsForManager();
+        }
+
+        // 关闭提示词管理模态框
+        function closePromptManager() {
+            const modal = document.getElementById('promptManagerModal');
+            modal.style.display = 'none';
+        }
+
+        // 加载提示词列表
+        async function loadPrompts() {
+            try {
+                const response = await fetch('/api/prompts');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '加载失败');
+                }
+
+                // 更新提示词统计
+                updatePromptStats(result.prompts);
+
+            } catch (error) {
+                console.error('加载提示词失败:', error);
+                showAlert(`加载提示词失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 为提示词管理器加载数据
+        async function loadPromptsForManager() {
+            const promptContent = document.getElementById('promptManagerContent');
+            
+            try {
+                // 显示加载状态
+                promptContent.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载提示词...</p>
+                    </div>
+                `;
+
+                const response = await fetch('/api/prompts');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '加载失败');
+                }
+
+                // 更新主页面的提示词统计
+                updatePromptStats(result.prompts);
+
+                if (result.prompts.length === 0) {
+                    promptContent.innerHTML = `
+                        <div class="empty-history">
+                            <i class="bi bi-chat-quote"></i>
+                            <h5>暂无提示词</h5>
+                            <p>提示词文件将显示在这里</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 渲染提示词列表
+                const promptsHTML = result.prompts.map(prompt => {
+                    const fileSize = formatFileSize(prompt.size);
+                    const isDefault = ['mtp_optimized_prompt.txt', 'mtp_optimized_prompt_v1.txt', 'mtp_optimized_prompt_full.txt'].includes(prompt.filename);
+                    
+                    return `
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div>
+                                    <h6 class="history-title">
+                                        ${prompt.name}
+                                        ${isDefault ? '<span class="badge bg-primary ms-2">默认</span>' : ''}
+                                    </h6>
+                                    <div class="history-date">${prompt.modified_date} | ${fileSize}</div>
+                                </div>
+                            </div>
+                            <div class="history-files">
+                                <div class="file-badge-container">
+                                    <div class="file-badge-info">
+                                        <i class="bi bi-file-text"></i>
+                                        <span class="file-type">提示词模板</span>
+                                        <span class="file-size">${fileSize}</span>
+                                    </div>
+                                    <div class="file-badge-actions">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewPrompt('${prompt.filename}')" title="查看">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="copyPrompt('${prompt.filename}')" title="复制">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="downloadPrompt('${prompt.filename}')" title="下载">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        ${!isDefault ? `<button class="btn btn-sm btn-outline-danger" onclick="deletePrompt('${prompt.filename}')" title="删除">
+                                            <i class="bi bi-trash"></i>
+                                        </button>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                promptContent.innerHTML = promptsHTML;
+
+            } catch (error) {
+                console.error('加载提示词失败:', error);
+                promptContent.innerHTML = `
+                    <div class="empty-history">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <h5>加载失败</h5>
+                        <p>${error.message}</p>
+                        <button class="btn btn-secondary mt-3" onclick="loadPromptsForManager()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            重试
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 更新提示词统计
+        function updatePromptStats(prompts) {
+            const promptCount = document.getElementById('promptCount');
+            promptCount.textContent = prompts.length;
+        }
+
+        // 查看提示词
+        async function viewPrompt(filename) {
+            try {
+                const response = await fetch(`/api/prompts/${filename}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '获取提示词失败');
+                }
+
+                // 显示提示词内容预览
+                showPromptPreview(result.content, filename, result.name);
+
+            } catch (error) {
+                console.error('查看提示词失败:', error);
+                showAlert(`查看提示词失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 复制提示词
+        async function copyPrompt(filename) {
+            try {
+                const response = await fetch(`/api/prompts/${filename}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '获取提示词失败');
+                }
+
+                const content = result.content;
+                
+                // 使用现代Clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(content);
+                } else {
+                    // 降级方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = content;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                }
+                
+                showCopyFeedback('✅ 提示词已复制到剪贴板！');
+
+            } catch (error) {
+                console.error('复制提示词失败:', error);
+                showAlert(`复制失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 下载提示词
+        function downloadPrompt(filename) {
+            const url = `/api/prompts/${filename}/download`;
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 删除提示词
+        async function deletePrompt(filename) {
+            if (!confirm(`确定要删除提示词文件 "${filename}" 吗？此操作不可恢复。`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/prompts/${filename}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || '删除失败');
+                }
+
+                showAlert(result.message, 'success');
+                
+                // 重新加载提示词列表
+                loadPromptsForManager();
+
+            } catch (error) {
+                console.error('删除提示词失败:', error);
+                showAlert(`删除失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 显示提示词预览
+        function showPromptPreview(content, filename, name) {
+            // 创建预览模态框
+            const previewHTML = `
+                <div class="history-manager-modal" id="promptPreviewModal">
+                    <div class="history-manager-content" style="width: 90%; max-width: 1000px;">
+                        <div class="history-manager-header">
+                            <h5 class="history-manager-title">
+                                <i class="bi bi-chat-quote"></i>
+                                ${name} (${filename})
+                            </h5>
+                            <button class="history-manager-close" onclick="closePromptPreview()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                        <div class="history-manager-body">
+                            <div class="preview-content" style="max-height: 50vh; overflow-y: auto; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;">
+                                ${content.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 移除现有预览
+            const existingPreview = document.getElementById('promptPreviewModal');
+            if (existingPreview) {
+                existingPreview.remove();
+            }
+
+            // 添加新预览
+            document.body.insertAdjacentHTML('beforeend', previewHTML);
+            document.getElementById('promptPreviewModal').style.display = 'flex';
+        }
+
+        // 关闭提示词预览
+        function closePromptPreview() {
+            const modal = document.getElementById('promptPreviewModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 页面加载时初始化历史统计
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载历史统计
+            loadHistoryForManager();
+            // 加载提示词统计
+            loadPromptsForManager();
+        });
+
+        // 图片查看功能
+        function openImageModal(imageSrc, imageAlt) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalLabel = document.getElementById('imageModalLabel');
+            
+            modalImage.src = imageSrc;
+            modalImage.alt = imageAlt;
+            modalLabel.textContent = imageAlt;
+            
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        }
+
+        // 提示词模板变更处理
+        function onPromptTemplateChange() {
+            const templateSelect = document.getElementById('promptTemplate');
+            const customRequirementsSection = document.getElementById('customRequirementsSection');
+            const selectedTemplate = templateSelect.value;
+            
+            if (selectedTemplate) {
+                // 检查是否为新增模板
+                if (selectedTemplate === 'new_template') {
+                    // 新增模板：隐藏自定义要求，直接显示创建模板模态框
+                    customRequirementsSection.style.display = 'none';
+                    showCreateTemplateModal();
+                    // 重置选择
+                    templateSelect.value = '';
+                } else {
+                    // 标准模板：显示自定义要求
+                    customRequirementsSection.style.display = 'block';
+                }
+            } else {
+                // 无选择：隐藏自定义要求
+                customRequirementsSection.style.display = 'none';
+            }
+        }
+
+        // 预览提示词模板内容
+        async function previewPromptTemplate() {
+            const promptTemplate = document.getElementById('promptTemplate').value;
+            
+            if (!promptTemplate) {
+                showAlert('请先选择一个提示词模板', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/prompt-templates/${promptTemplate}/content`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 显示预览模态框
+                    showPromptPreview(result.content, promptTemplate, result.name || '模板预览');
+                } else {
+                    showAlert(`获取模板内容失败: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`请求失败: ${error.message}`, 'danger');
+            }
+        }
+
+        // 显示创建自定义提示词模板模态框
+        function showCreateTemplateModal() {
+            const modal = document.getElementById('createTemplateModal');
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        }
+
+        // 创建自定义提示词模板
+        async function createCustomTemplate() {
+            const templateName = document.getElementById('templateName').value.trim();
+            const templateDescription = document.getElementById('templateDescription').value.trim();
+            const templateContent = document.getElementById('templateContent').value.trim();
+            
+            if (!templateName) {
+                alert('请输入模板名称');
+                return;
+            }
+            
+            if (!templateContent) {
+                alert('请输入模板内容');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/prompt-templates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: templateName,
+                        description: templateDescription,
+                        content: templateContent,
+                        supports_custom_requirements: true
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('模板创建成功！');
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createTemplateModal'));
+                    modal.hide();
+                    
+                    // 清空表单
+                    document.getElementById('templateName').value = '';
+                    document.getElementById('templateDescription').value = '';
+                    document.getElementById('templateContent').value = '';
+                    
+                    // 重新加载模板列表
+                    await loadPromptTemplates();
+                } else {
+                    alert('创建失败：' + result.error);
+                }
+            } catch (error) {
+                console.error('创建模板失败:', error);
+                alert('创建失败：' + error.message);
+            }
+        }
+
+        // 关闭前置条件模态框
+        function closePrerequisites() {
+            const modal = document.getElementById('prerequisitesModal');
+            modal.style.display = 'none';
+        }
+
+        // 显示前置条件模态框
+        function showPrerequisites() {
+            const modal = document.getElementById('prerequisitesModal');
+            modal.style.display = 'flex';
+        }
+
+        // 显示模板编写帮助
+        function showTemplateHelp() {
+            // 这里可以显示更详细的帮助信息
+            alert('模板编写帮助：\n\n1. 使用 {content} 占位符插入需求文档内容\n2. 使用 {user_requirements} 占位符插入用户自定义要求\n3. 模板内容应该包含完整的AI指令和输出格式要求\n4. 建议参考现有模板的格式和结构');
+        }
+    </script>
+
+    <!-- 图片查看模态弹窗 -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">图片查看</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="大图查看" class="img-fluid">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建自定义提示词模板模态框 -->
+    <div class="modal fade" id="createTemplateModal" tabindex="-1" aria-labelledby="createTemplateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createTemplateModalLabel">
+                        <i class="bi bi-plus-circle"></i>
+                        创建自定义提示词模板
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="templateName" class="form-label">模板名称</label>
+                                <input type="text" class="form-control" id="templateName" placeholder="请输入模板名称">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="templateDescription" class="form-label">模板描述</label>
+                                <textarea class="form-control" id="templateDescription" rows="2" placeholder="请输入模板描述"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="templateContent" class="form-label">
+                                    模板内容
+                                    <button type="button" class="btn btn-sm btn-outline-info ms-2" onclick="showTemplateHelp()" title="查看模板编写帮助">
+                                        <i class="bi bi-question-circle"></i>
+                                    </button>
+                                </label>
+                                <textarea class="form-control" id="templateContent" rows="12" 
+                                          placeholder="请输入模板内容，支持使用 {content} 和 {user_requirements} 占位符"></textarea>
+                                <small class="form-text text-muted">
+                                    支持占位符：{content} 表示需求文档内容，{user_requirements} 表示用户自定义要求
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="template-help-panel">
+                                <h6><i class="bi bi-lightbulb"></i> 模板编写提示</h6>
+                                <ul class="template-tips">
+                                    <li>使用 {content} 占位符插入需求文档内容</li>
+                                    <li>使用 {user_requirements} 占位符插入用户自定义要求</li>
+                                    <li>模板内容应该包含完整的AI指令和输出格式要求</li>
+                                    <li>建议参考现有模板的格式和结构</li>
+                                </ul>
+                                
+                                <div class="template-example">
+                                    <h6>标准模板示例：</h6>
+                                    <div class="example-content">
+                                        <code>
+你是一名资深QA，请基于以下需求文档生成测试用例：<br><br>
+需求文档内容：<br>
+{content}<br><br>
+用户自定义要求：<br>
+{user_requirements}<br><br>
+请输出结构化测试用例...
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="createCustomTemplate()">创建模板</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

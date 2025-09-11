@@ -1,0 +1,149 @@
+[object Object]workflow:[object Object]
+   name:测试用例生成管道,
+    description:基于飞书文档的自动化测试用例生成工作流",
+   version": "10,nodes":
+     [object Object]
+    id:feishu_trigger,
+      type": trigger,
+      name": 飞书文档触发器,
+  config":[object Object]
+        type": "webhook",
+         endpoint": "/webhook",
+          methodPOST",
+          description": "监听飞书文档更新事件"
+        }
+      },
+     [object Object]
+    id":feishu_reader,
+        typeaction,
+      name": 飞书文档读取器,
+  config":[object Object]
+     type": "http_request",
+         method: GET",
+          url{{feishu_document_url}}",
+     headers: {    Authorization: "Bearer {{feishu_token}}",
+           Content-Type":application/json"
+          },
+          description": 读取飞书文档内容"
+        }
+      },
+     [object Object]     id: "deepseek_parser,
+        typeaction,
+       name: pSeek解析器,
+  config":[object Object]
+       type":ai_completion",
+         provider": "deepseek",
+          model":deepseek-chat,
+         prompt": 你是一名资深QA，基于飞书需求文档生成测试用例。按以下结构输出：\n\n功能模块:<模块名>\n测试点:<边界值/异常流>\n用例步骤:<步骤>\n预期结果:<结果>\n\n文档内容：{{document_content}}",
+          max_tokens:4000      temperature": 0.7,
+          description": 使用DeepSeek-R1生成测试用例"
+        }
+      },
+     [object Object]   id": "prompt_engineer,
+        typeaction,
+       name: 提示词工程,
+  config":[object Object]
+       type: n_code,
+          code":import re\n\ndef process_ai_output(ai_output):\n    # 解析AI输出，提取结构化测试用例\n    test_cases = []\n    current_case = {}\n    \n    lines = ai_output.split('\\n')\n    for line in lines:\n        line = line.strip()\n        if not line:\n            continue\n        \n        if line.startswith('功能模块:'):\n            if current_case:\n                test_cases.append(current_case)\n            current_case = {'module': line.replace(功能模块:', '').strip()}\n        elif line.startswith('测试点:'):\n            current_case['test_point'] = line.replace('测试点:', '').strip()\n        elif line.startswith('用例步骤:'):\n            current_case['steps'] = line.replace(用例步骤:', '').strip()\n        elif line.startswith('预期结果:'):\n            current_case[expected_result'] = line.replace(预期结果:', '').strip()\n            test_cases.append(current_case)\n            current_case = {}\n    \n    if current_case:\n        test_cases.append(current_case)\n    \n    return test_cases\n\nresult = process_ai_output({{ai_output}})",
+          description": "解析和结构化AI输出"
+        }
+      },
+     [object Object]      idmarkdown_generator,
+        typeaction,
+       name: kdown生成器,
+  config":[object Object]
+       type: n_code,
+    code:def generate_markdown(test_cases, title):\n    markdown_content = f# {title}\\n\\nundefinedn    \n    # 按模块分组\n    modules = {}\n    for test_case in test_cases:\n        module = test_case.get(module,未分类n        if module not in modules:\n            modules[module] = []\n        modules[module].append(test_case)\n    \n    # 生成模块内容\n    for module_name, module_cases in modules.items():\n        markdown_content += f'## [object Object]module_name}\\n\\n'\n        \n        for i, test_case in enumerate(module_cases, 1):\n            markdown_content += f### 测试用例 {i}\\n\\n'\n            markdown_content += f'**测试点:** {test_case.get(\test_point\, "")}\n\\n'\n            markdown_content += f**用例步骤:**\\n{test_case.get(\steps\, "")}\n\\n'\n            markdown_content += f**预期结果:**\\n{test_case.get(\"expected_result\, "")}\n\\n'\n            markdown_content += ---\\n\\n'\n    \n    return markdown_content\n\nresult = generate_markdown({{test_cases}}, \"{{document_title}}\")",
+          description": 生成Markdown格式的测试用例"
+        }
+      },
+     [object Object]
+    id: "excel_generator,
+        typeaction,
+       name": "Excel生成器,
+  config":[object Object]
+       type: n_code,
+       code":import pandas as pd\n\ndef generate_excel(test_cases):\n    excel_data = []\n    for i, test_case in enumerate(test_cases, 1        excel_data.append({\n    序号: i,\n           功能模块: test_case.get('module',),\n          测试点: test_case.get('test_point',),\n           用例步骤: test_case.get('steps',),\n           预期结果: test_case.get(expected_result',),\n       执行状态: ,\n           备注: 'undefinedn        })\n    \n    df = pd.DataFrame(excel_data)\n    return df.to_excel(index=falsenresult = generate_excel({{test_cases}})",
+          description:生成Excel格式的测试用例"
+        }
+      },
+     [object Object]  id":file_download,
+        typeaction,
+      name:文件下载,
+  config":[object Object]
+     type: output,         formats": [markdown", "excel"],
+          filename_template": "test_cases_{{timestamp}}",
+          description": 提供文件下载链接"
+        }
+      }
+    ],
+  edges":
+     [object Object]
+      from:feishu_trigger,
+    to":feishu_reader",
+    condition": "event.type == 'docx_updated'"
+      },
+     [object Object]
+      from":feishu_reader,     to: "deepseek_parser",
+    condition": always"
+      },
+     [object Object]
+        from: "deepseek_parser,   to": "prompt_engineer",
+    condition": always"
+      },
+     [object Object]
+      from": "prompt_engineer,      tomarkdown_generator",
+    condition": always"
+      },
+     [object Object]
+      from": "prompt_engineer,
+    to: "excel_generator",
+    condition": always"
+      },
+     [object Object]
+       from": "markdown_generator,  to":file_download",
+    condition": always"
+      },
+     [object Object]
+      from: "excel_generator,  to":file_download",
+    condition":always"
+      }
+    ],
+ variables":
+     [object Object]
+       name: "feishu_document_url,
+        typestring",
+        description: 飞书文档URL"
+      },
+     [object Object]
+     name": "feishu_token,
+        typestring",
+        description": 飞书访问令牌"
+      },
+     [object Object]
+       namedocument_content,
+        typestring",
+        description": "文档内容"
+      },
+     [object Object]
+        name": "ai_output,
+        typestring",
+        description": AI生成结果"
+      },
+     [object Object]
+     name": "test_cases,
+       type: array    description: 结构化测试用例"
+      },
+     [object Object]
+       name:document_title,
+        typestring",
+        description": "文档标题"
+      },
+     [object Object]
+        name": "timestamp,
+        typestring",
+        description":时间戳"
+      }
+    ]
+  }
+} 
