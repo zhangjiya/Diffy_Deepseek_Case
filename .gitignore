@@ -55,7 +55,6 @@ output/
 *.xmind
 
 # Configuration
-config.yaml
 .env
 *.key
 *.pem

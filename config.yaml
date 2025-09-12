@@ -15,7 +15,7 @@ doubao:
 #      faf6e5c7-90de-4efa-9613-4c163fe86ae6
       base_url: https://ark.cn-beijing.volces.com/api/v3
       max_tokens: 16384
-      model: doubao-1-5-thinking-pro-250415
+      model: doubao-1-5-thinking-vision-pro-250428
       name: 账号1（即将用完，建议账号2）
       temperature: 0.3
       top_p: 0.6
@@ -24,10 +24,10 @@ doubao:
 #      62e7cc35-ce4c-47f7-97f8-cdd02b8c8e69
       base_url: https://ark.cn-beijing.volces.com/api/v3
       max_tokens: 16384
-      model: doubao-1-5-thinking-pro-250415
+      model: doubao-1-5-thinking-vision-pro-250428
       name: 账号2
       temperature: 0.3
-      top_p: 0.6cççc
+      top_p: 0.6
 
 feishu:
   app_id: cli_a8e4a0b4b5dd9013
